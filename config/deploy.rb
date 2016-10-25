@@ -5,7 +5,12 @@ set :user, 'lastfmtelebot'
 namespace :deploy do
   task :restart do
     on roles(:app) do
-      execute "./deploy.sh restart"
+      within release_path do
+        execute "cd '#{release_path}'; nohup ./deploy.sh restart > /dev/null 2>&1 &"
+      end
     end
   end
+
+  after :published, 'deploy:restart'
+
 end
