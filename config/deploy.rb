@@ -5,9 +5,7 @@ set :user, 'lastfmtelebot'
 namespace :deploy do
   task :restart do
     on roles(:app) do
-      within release_path do
-        execute "cd '#{release_path}'; nohup ./deploy.sh restart > /dev/null 2>&1 &"
-      end
+      execute "sudo systemctl restart lastfmtelebot.service"
     end
   end
 
