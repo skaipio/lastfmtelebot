@@ -13,6 +13,9 @@ class TelegramBotAPIClient(object):
                 result = self.__set_webhook()
                 self.logger.info(result)
 
+    def answer_inline_query(self, query_id, results):
+        self.__do_post_json_request('answerInlineQuery', {}, {'inline_query_id': query_id, 'results': results})
+
     def __get_bot(self):
         response = self.__do_get_request('getMe')
         json = response.json()
@@ -41,6 +44,10 @@ class TelegramBotAPIClient(object):
 
     def __do_post_request(self, method, params):
         url = "{root}/bot{bot_key}/{method}".format(root=self.BOT_API_ROOT, bot_key=self.bot_key, method=method)
+        return requests.post(url,params=params)
+
+    def __do_post_json_request(self, method, params, data):
+        url = "{root}/bot{bot_key}/{method}".format(root=self.BOT_API_ROOT, bot_key=self.bot_key, method=method, data=data)
         return requests.post(url,params=params)
 
     def __do_post_file_request(self, method, params, files):

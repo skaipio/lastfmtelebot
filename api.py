@@ -1,7 +1,7 @@
 from flask import Flask, redirect, request, session
 from lastfm_client import LastFMClient
 from telegram_botapi_client import TelegramBotAPIClient
-import logging
+import logging, re
 
 app = Flask(__name__)
 app.config.from_envvar('LASTFMBOTAPI_CONFIG')
@@ -22,7 +22,17 @@ LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SE
 
 @app.route("/" + TELEGRAM_BOT_TOKEN, methods=['POST'])
 def bot_query():
-    applogger.info("Received a query from bot\n{}\n{}".format(request.content, request.args))
+    json = request.json
+    applogger.info("Received a query from bot\n{}".format(json))
+    inline_query = json['inline_query']
+    query = inline_query['query']
+    query_id = inline_query['id']
+    m = re.search(r'what is (\S+) listening to?', query)
+    if m != None:
+        username = m.group(0)
+        tracks = LASTFM_CLIENT.get_recent_tracks(username)
+        first_track = tracks[0]
+        TELEGRAM_BOTAPI_CLIENT.answer_inline_query(query_id, [first_track])
     return ''
 
 @app.route("/session")
