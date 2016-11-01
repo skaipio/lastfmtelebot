@@ -1,9 +1,17 @@
 from flask import Flask, redirect, request, session
 from lastfm_client import LastFMClient
 from telegram_botapi_client import TelegramBotAPIClient
+import logging
 
 app = Flask(__name__)
 app.config.from_envvar('LASTFMBOTAPI_CONFIG')
+
+logfile_path = app.config['LOGFILE']
+applogger = app.logger
+file_handler = logging.FileHandler(logfile_path)
+file_handler.setLevel(logging.DEBUG)
+applogger.setLevel(logging.DEBUG)
+applogger.addHandler(file_handler)
 
 session_map = {}
 
@@ -16,6 +24,7 @@ LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SE
 def bot_query():
     token = get_token(request)
     if token == TELEGRAM_BOT_TOKEN:
+        applogger.info("Received a query from bot\n{}\n{}".format(request.content, request.args))
         print request.content
 
 @app.route("/session")

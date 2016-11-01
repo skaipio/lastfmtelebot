@@ -20,7 +20,7 @@ class TelegramBotAPIClient(object):
         webhook_url="https://lastfmtelebot.tk/{bot_token}".format(bot_token=self.bot_token)
         json = self.__do_get_request('setWebhook', {'url': webhook_url}).json()
         if json['ok']==True:
-            return json.result
+            return json['result']
         return None
 
     def __do_get_request(self, method, params={}):
