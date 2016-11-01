@@ -9,10 +9,10 @@ class LastFMClient(object):
     LASTFM_API_ROOT = 'http://www.last.fm/api'
     LASTFM_SCROBBLER_ROOT = 'http://ws.audioscrobbler.com/2.0/'
 
-    def __init__(self, api_key, api_secret):
+    def __init__(self, api_key, api_secret, logger):
         self.api_key = api_key
         self.api_secret = api_secret
-
+        self.logger = logger
 
     def get_auth_url(self, callback_url):
         base_url = "{lastfm_root}/auth/?api_key={api_key}" \
@@ -36,7 +36,9 @@ class LastFMClient(object):
         params = self.create_nonauth_params('user.getRecentTracks')
         params['user'] = user
         params['from'] = from_time
+        self.logger.info('Response from lastfm:')
         response = requests.get("{root}".format(root=self.LASTFM_SCROBBLER_ROOT), params=params)
+        self.logger.info(response)
         return mapper.lastfm_recenttracks(response.content)
 
 

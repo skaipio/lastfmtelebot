@@ -18,7 +18,7 @@ session_map = {}
 TELEGRAM_BOT_KEY=app.config['TELEGRAM_BOT_KEY']
 TELEGRAM_BOT_TOKEN=app.config['TELEGRAM_BOT_TOKEN']
 TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN, applogger)
-LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'])
+LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'], applogger)
 
 @app.route("/" + TELEGRAM_BOT_TOKEN, methods=['POST'])
 def bot_query():
@@ -31,8 +31,9 @@ def bot_query():
     if m != None:
         username = m.group(0)
         tracks = LASTFM_CLIENT.get_recent_tracks(username)
-        first_track = tracks[0]
-        TELEGRAM_BOTAPI_CLIENT.answer_inline_query(query_id, [first_track])
+        if len(tracks) > 0:
+            first_track = tracks[0]
+            TELEGRAM_BOTAPI_CLIENT.answer_inline_query(query_id, [first_track])
     return ''
 
 @app.route("/session")
