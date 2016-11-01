@@ -17,16 +17,12 @@ session_map = {}
 
 TELEGRAM_BOT_KEY=app.config['TELEGRAM_BOT_KEY']
 TELEGRAM_BOT_TOKEN=app.config['TELEGRAM_BOT_TOKEN']
-PUBLIC_CERT_PATH=app.config['PUBLIC_CERT']
-TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN, applogger, PUBLIC_CERT_PATH)
+TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN, applogger)
 LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'])
 
-@app.route("/")
+@app.route("/" + TELEGRAM_BOT_TOKEN, methods=['POST'])
 def bot_query():
-    token = get_token(request)
-    if token == TELEGRAM_BOT_TOKEN:
-        applogger.info("Received a query from bot\n{}\n{}".format(request.content, request.args))
-        print request.content
+    applogger.info("Received a query from bot\n{}\n{}".format(request.content, request.args))
     return ''
 
 @app.route("/session")
