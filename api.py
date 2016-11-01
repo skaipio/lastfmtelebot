@@ -17,7 +17,7 @@ session_map = {}
 
 TELEGRAM_BOT_KEY=app.config['TELEGRAM_BOT_KEY']
 TELEGRAM_BOT_TOKEN=app.config['TELEGRAM_BOT_TOKEN']
-TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN)
+TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN, applogger)
 LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'])
 
 @app.route("/")
@@ -26,6 +26,7 @@ def bot_query():
     if token == TELEGRAM_BOT_TOKEN:
         applogger.info("Received a query from bot\n{}\n{}".format(request.content, request.args))
         print request.content
+    return ''
 
 @app.route("/session")
 def new_session():
