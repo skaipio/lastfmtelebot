@@ -33,6 +33,7 @@ def bot_query():
         tracks = LASTFM_CLIENT.get_recent_tracks(username)
         if len(tracks) > 0:
             first_track = tracks[0]
+            applogger.info('Found track ' + first_track.name + ' for user ' + username)
             TELEGRAM_BOTAPI_CLIENT.answer_inline_query(query_id, [first_track])
     return ''
 
