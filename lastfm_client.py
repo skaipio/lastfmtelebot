@@ -40,7 +40,7 @@ class LastFMClient(object):
         params['from'] = from_time
         self.logger.info('Response from lastfm:')
         response = requests.get(self.LASTFM_SCROBBLER_ROOT, params=params)
-        self.logger.info(response)
+        self.logger.info(response.status_code)
         return self.mapper.lastfm_recenttracks(response.json())
 
 

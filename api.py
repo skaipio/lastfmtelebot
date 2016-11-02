@@ -38,7 +38,10 @@ def __answer_message(json):
             first_track = tracks[0]
             applogger.info('Found track ' + first_track.name + ' for user ' + username)
             chat_id = message['chat']['id']
-            TELEGRAM_BOTAPI_CLIENT.send_message(chat_id, username + ' is listening to ' + first_track.name)
+            TELEGRAM_BOTAPI_CLIENT.send_message(chat_id, \
+                username + ' is listening to ' + \
+                first_track.name + ' of artist ' + \
+                first_track.artist)
 
 def __answer_inline_query(json):
     inline_query = json['inline_query']

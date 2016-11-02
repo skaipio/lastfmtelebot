@@ -15,8 +15,9 @@ class Track(object):
     """
     Lastfm Tracks
     """
-    def __init__(self, name):
+    def __init__(self, name, artist):
         self.name = name
+        self.artist = artist
 
 class LastFmMapper(object):
 
@@ -38,7 +39,8 @@ class LastFmMapper(object):
         tracks = []
         for raw_track in json['recenttracks']['track']:
             name = raw_track['name']
-            track = Track(name)
+            artist = raw_track['artist'].text
+            track = Track(name, artist)
             tracks.append(track)
 
         return tracks
