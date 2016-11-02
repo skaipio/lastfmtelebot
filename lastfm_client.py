@@ -1,5 +1,5 @@
 import requests, hashlib
-import lastfm_xml_mapper as mapper
+from lastfm_mapper import LastFmMapper
 from datetime import timedelta, datetime
 """
 Client methods for Last.fm API
@@ -13,6 +13,7 @@ class LastFMClient(object):
         self.api_key = api_key
         self.api_secret = api_secret
         self.logger = logger
+        self.mapper = LastFmMapper(logger)
 
     def get_auth_url(self, callback_url):
         base_url = "{lastfm_root}/auth/?api_key={api_key}" \
@@ -27,7 +28,7 @@ class LastFMClient(object):
         method = 'auth.getSession'
         payload = self.create_params(method, token)
         response = requests.get("{root}".format(root=self.LASTFM_SCROBBLER_ROOT), params=payload)
-        lastfm_session = mapper.lastfm_session(response.content)
+        lastfm_session = self.mapper.lastfm_session(response.content)
         return lastfm_session
 
     def get_recent_tracks(self, user):
@@ -37,13 +38,13 @@ class LastFMClient(object):
         params['user'] = user
         params['from'] = from_time
         self.logger.info('Response from lastfm:')
-        response = requests.get("{root}".format(root=self.LASTFM_SCROBBLER_ROOT), params=params)
+        response = requests.get(self.LASTFM_SCROBBLER_ROOT, params=params)
         self.logger.info(response)
-        return mapper.lastfm_recenttracks(response.content)
+        return self.mapper.lastfm_recenttracks(response.json())
 
 
     def create_nonauth_params(self, method):
-        return {'method': method, 'api_key': self.api_key}
+        return {'method': method, 'api_key': self.api_key, 'format': 'json'}
 
     def create_params(self, method, token):
         signature = self.create_signature(method, token)
