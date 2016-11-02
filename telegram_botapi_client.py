@@ -13,9 +13,14 @@ class TelegramBotAPIClient(object):
                 result = self.__set_webhook()
                 self.logger.info(result)
 
+    def send_message(self, chat_id, message):
+        response = self.__do_post_json_request('sendMessage', {}, {'chat_id': chat_id, 'message': message})
+        self.logger.info('Sent message. Response:')
+        self.logger.info(response)
+
     def answer_inline_query(self, query_id, results):
         self.logger.info('Answering query ' + str(query_id))
-        response = self.__do_post_json_request('answerInlineQuery', {}, {'inline_query_id': query_id, 'results': results})
+        response = self.__do_post_json_request('answerInlineQuery', {}, {'inline_query_id': str(query_id), 'results': results})
         self.logger.info('Response to "answer inline query"')
         self.logger.info(response.status_code)
         self.logger.info(response.text)

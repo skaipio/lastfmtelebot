@@ -20,13 +20,28 @@ TELEGRAM_BOT_TOKEN=app.config['TELEGRAM_BOT_TOKEN']
 TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN, applogger)
 LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'], applogger)
 
-@app.route("/" + TELEGRAM_BOT_TOKEN, methods=['POST'])
-def bot_query():
-    json = request.json
-    applogger.info("Received a query from bot\n{}".format(json))
+def __is_message(json):
+    return json['message_id'] != None
+
+def __is_inline_query(json):
+    return json['inline_query'] != None
+
+def __answer_message(json):
+    text = json['text']
+    m = re.search(r'^What is (\S+) listening to?', text)
+    if m != None:
+        username = m.group(1)
+        tracks = LASTFM_CLIENT.get_recent_tracks(username)
+        if len(tracks) > 0:
+            first_track = tracks[0]
+            applogger.info('Found track ' + first_track.name + ' for user ' + username)
+            chat_id = json['chat']['id']
+            TELEGRAM_BOTAPI_CLIENT.send_message(chat_id, username + ' is listening to ' + first_track.name)
+
+def __answer_inline_query(json):
     inline_query = json['inline_query']
     query = inline_query['query']
-    query_id = query['id']
+    query_id = inline_query['id']
     m = re.search(r'what is (\S+) listening to?', query)
     if m != None:
         username = m.group(1)
@@ -35,6 +50,15 @@ def bot_query():
             first_track = tracks[0]
             applogger.info('Found track ' + first_track.name + ' for user ' + username)
             TELEGRAM_BOTAPI_CLIENT.answer_inline_query(query_id, [first_track.name])
+
+@app.route("/" + TELEGRAM_BOT_TOKEN, methods=['POST'])
+def bot_query():
+    json = request.json
+    applogger.info("Received a query from bot\n{}".format(json))
+    if __is_message(json):
+        __answer_message(json)
+    if __is_inline_query(json):
+        __answer_inline_query(json)
     return ''
 
 @app.route("/session")
