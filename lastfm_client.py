@@ -32,6 +32,7 @@ class LastFMClient(object):
         return lastfm_session
 
     def get_recent_tracks(self, user):
+        self.logger.info('Getting recent tracks for user ' + user)
         now = datetime.now()
         from_time = (now + timedelta(days=-5)).time()
         params = self.create_nonauth_params('user.getRecentTracks')
