@@ -29,7 +29,9 @@ def __is_inline_query(json):
 def __answer_message(json):
     applogger.info('Answering message')
     message = json['message']
-    text = message['text']
+    text = message.get('text', None)
+    if text == None:
+        return
     m = re.search(r'^What is (\S+) listening to?', text)
     if m != None:
         username = m.group(1)
