@@ -26,7 +26,7 @@ def bot_query():
     applogger.info("Received a query from bot\n{}".format(json))
     inline_query = json['inline_query']
     query = inline_query['query']
-    query_id = inline_query['id']
+    query_id = query['id']
     m = re.search(r'what is (\S+) listening to?', query)
     if m != None:
         username = m.group(1)
