@@ -14,7 +14,11 @@ class TelegramBotAPIClient(object):
                 self.logger.info(result)
 
     def answer_inline_query(self, query_id, results):
-        self.__do_post_json_request('answerInlineQuery', {}, {'inline_query_id': query_id, 'results': results})
+        response = self.__do_post_json_request('answerInlineQuery', {}, {'inline_query_id': query_id, 'results': results})
+        self.logger.info('Response to "answer inline query"')
+        self.logger.info(response.status_code)
+        self.logger.info(response.text)
+
 
     def __get_bot(self):
         response = self.__do_get_request('getMe')
