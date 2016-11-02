@@ -1,4 +1,4 @@
-import requests
+import requests, json
 
 class TelegramBotAPIClient(object):
     BOT_API_ROOT='https://api.telegram.org'
@@ -47,8 +47,8 @@ class TelegramBotAPIClient(object):
         return requests.post(url,params=params)
 
     def __do_post_json_request(self, method, params, data):
-        url = "{root}/bot{bot_key}/{method}".format(root=self.BOT_API_ROOT, bot_key=self.bot_key, method=method, data=data)
-        return requests.post(url,params=params)
+        url = "{root}/bot{bot_key}/{method}".format(root=self.BOT_API_ROOT, bot_key=self.bot_key, method=method)
+        return requests.post(url,params=params, data=json.dumps(data))
 
     def __do_post_file_request(self, method, params, files):
         url = "{root}/bot{bot_key}/{method}".format(root=self.BOT_API_ROOT, bot_key=self.bot_key, method=method)

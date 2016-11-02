@@ -34,7 +34,7 @@ def bot_query():
         if len(tracks) > 0:
             first_track = tracks[0]
             applogger.info('Found track ' + first_track.name + ' for user ' + username)
-            TELEGRAM_BOTAPI_CLIENT.answer_inline_query(query_id, [first_track])
+            TELEGRAM_BOTAPI_CLIENT.answer_inline_query(query_id, [first_track.name])
     return ''
 
 @app.route("/session")
