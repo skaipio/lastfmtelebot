@@ -21,13 +21,14 @@ TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOK
 LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'], applogger)
 
 def __is_message(json):
-    return json['message_id'] != None
+    return json.get('message', None) != None
 
 def __is_inline_query(json):
-    return json['inline_query'] != None
+    return json.get('inline_query', None) != None
 
 def __answer_message(json):
-    text = json['text']
+    message = json['message']
+    text = message['text']
     m = re.search(r'^What is (\S+) listening to?', text)
     if m != None:
         username = m.group(1)
@@ -35,7 +36,7 @@ def __answer_message(json):
         if len(tracks) > 0:
             first_track = tracks[0]
             applogger.info('Found track ' + first_track.name + ' for user ' + username)
-            chat_id = json['chat']['id']
+            chat_id = message['chat']['id']
             TELEGRAM_BOTAPI_CLIENT.send_message(chat_id, username + ' is listening to ' + first_track.name)
 
 def __answer_inline_query(json):
