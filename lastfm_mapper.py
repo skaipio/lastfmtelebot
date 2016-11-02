@@ -35,12 +35,13 @@ class LastFmMapper(object):
 
         return None
 
-    def lastfm_recenttracks(self, json):
+    def lastfm_recenttracks(self, content):
+        root = ET.fromstring(content)
         tracks = []
-        for raw_track in json['recenttracks']['track']:
-            name = raw_track['name']
-            artist = raw_track['artist'].text
-            track = Track(name, artist)
+        for raw_track in root.iter('track'):
+            name_elem = raw_track.find('name')
+            artist_elem = raw_track.find('artist')
+            track = Track(name_elem.text, artist_elem.text)
             tracks.append(track)
 
         return tracks

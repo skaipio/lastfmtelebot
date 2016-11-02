@@ -41,11 +41,11 @@ class LastFMClient(object):
         self.logger.info('Response from lastfm:')
         response = requests.get(self.LASTFM_SCROBBLER_ROOT, params=params)
         self.logger.info(response.status_code)
-        return self.mapper.lastfm_recenttracks(response.json())
+        return self.mapper.lastfm_recenttracks(response.content)
 
 
     def create_nonauth_params(self, method):
-        return {'method': method, 'api_key': self.api_key, 'format': 'json'}
+        return {'method': method, 'api_key': self.api_key}
 
     def create_params(self, method, token):
         signature = self.create_signature(method, token)
