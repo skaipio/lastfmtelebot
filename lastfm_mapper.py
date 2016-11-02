@@ -38,7 +38,7 @@ class LastFmMapper(object):
         tracks = []
         self.logger.info('Raw tracks json')
         self.logger.info(json)
-        for raw_track in json['track']:
+        for raw_track in json['recenttracks']['track']:
             name = raw_track['name']
             track = Track(name)
             tracks.append(track)

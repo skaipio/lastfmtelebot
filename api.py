@@ -29,7 +29,7 @@ def bot_query():
     query_id = inline_query['id']
     m = re.search(r'what is (\S+) listening to?', query)
     if m != None:
-        username = m.group(0)
+        username = m.group(1)
         tracks = LASTFM_CLIENT.get_recent_tracks(username)
         if len(tracks) > 0:
             first_track = tracks[0]
