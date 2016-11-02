@@ -27,6 +27,7 @@ def __is_inline_query(json):
     return json.get('inline_query', None) != None
 
 def __answer_message(json):
+    applogger.info('Answering message')
     message = json['message']
     text = message['text']
     m = re.search(r'^What is (\S+) listening to?', text)
