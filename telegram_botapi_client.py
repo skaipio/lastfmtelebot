@@ -14,7 +14,7 @@ class TelegramBotAPIClient(object):
                 self.logger.info(result)
 
     def send_message(self, chat_id, message):
-        response = self.__do_post_json_request('sendMessage', {}, {'chat_id': chat_id, 'message': message})
+        response = self.__do_post_request('sendMessage', {'chat_id': chat_id, 'text': message})
         self.logger.info('Sent message. Response:')
         self.logger.info(response.status_code)
         self.logger.info(response.text)
