@@ -1,17 +1,15 @@
 from flask import Flask, redirect, request, session
 from lastfm_client import LastFMClient
 from telegram_botapi_client import TelegramBotAPIClient
-import logging, re
+from handlers import message_handler, inline_query_handler
+from telegram_mapper import TelegramMapper, Message, InlineQuery
+import applogger
 
 app = Flask(__name__)
 app.config.from_envvar('LASTFMBOTAPI_CONFIG')
 
 logfile_path = app.config['LOGFILE']
-applogger = app.logger
-file_handler = logging.FileHandler(logfile_path)
-file_handler.setLevel(logging.DEBUG)
-applogger.setLevel(logging.DEBUG)
-applogger.addHandler(file_handler)
+applogger.setup(app.logger, logfile_path)
 
 session_map = {}
 
@@ -19,53 +17,21 @@ TELEGRAM_BOT_KEY=app.config['TELEGRAM_BOT_KEY']
 TELEGRAM_BOT_TOKEN=app.config['TELEGRAM_BOT_TOKEN']
 TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN, applogger)
 LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'], applogger)
-
-def __is_message(json):
-    return json.get('message', None) != None
-
-def __is_inline_query(json):
-    return json.get('inline_query', None) != None
-
-def __answer_message(json):
-    applogger.info('Answering message')
-    message = json['message']
-    text = message.get('text', None)
-    if text == None:
-        return
-    m = re.search(r'/recent_tracks (\S+)', text) or re.search(r'^What is (\S+) listening to?', text)
-    if m != None:
-        username = m.group(1)
-        tracks = LASTFM_CLIENT.get_recent_tracks(username)
-        if len(tracks) > 0:
-            first_track = tracks[0]
-            applogger.info('Found track ' + first_track.name + ' for user ' + username)
-            chat_id = message['chat']['id']
-            TELEGRAM_BOTAPI_CLIENT.send_message(chat_id, \
-                username + ' is listening to ' + \
-                first_track.name + ' of artist ' + \
-                first_track.artist)
-
-def __answer_inline_query(json):
-    inline_query = json['inline_query']
-    query = inline_query['query']
-    query_id = inline_query['id']
-    m = re.search(r'what is (\S+) listening to?', query)
-    if m != None:
-        username = m.group(1)
-        tracks = LASTFM_CLIENT.get_recent_tracks(username)
-        if len(tracks) > 0:
-            first_track = tracks[0]
-            applogger.info('Found track ' + first_track.name + ' for user ' + username)
-            TELEGRAM_BOTAPI_CLIENT.answer_inline_query(query_id, [first_track.name])
+__telegram_mapper = TelegramMapper(app.logger)
+__message_handler = message_handler.MessageHandler(LASTFM_CLIENT, TELEGRAM_BOTAPI_CLIENT)
+__inline_query_handler = inline_query_handler.InlineQueryHandler(LASTFM_CLIENT, TELEGRAM_BOTAPI_CLIENT)
 
 @app.route("/" + TELEGRAM_BOT_TOKEN, methods=['POST'])
 def bot_query():
     json = request.json
     applogger.info("Received a query from bot\n{}".format(json))
-    if __is_message(json):
-        __answer_message(json)
-    if __is_inline_query(json):
-        __answer_inline_query(json)
+
+    telegram_obj = __telegram_mapper.parse_telegram_object(json)
+    if isinstance(telegram_obj, Message):
+        __message_handler.handle_message(telegram_obj)
+    elif isinstance(telegram_obj, InlineQuery):
+        __inline_query_handler.handle_inline_query(telegram_obj)
+
     return ''
 
 @app.route("/session")
