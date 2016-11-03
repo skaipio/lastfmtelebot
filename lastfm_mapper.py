@@ -38,9 +38,11 @@ class LastFmMapper(object):
 
     def lastfm_recenttracks(self, content):
         root = ET.fromstring(content)
-        raw_tracks = root.findall('track')
+        raw_tracks = root.findall('track')[0:5]
         tracks = []
         for raw_track in raw_tracks:
+            self.logger.info('Parsing track')
+            self.logger.info(raw_track)
             name_elem = raw_track.find('name')
             artist_elem = raw_track.find('artist')
             url_elem = raw_track.find('url')
