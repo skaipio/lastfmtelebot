@@ -6,7 +6,8 @@ class Chat(object):
         self.chat_type = chat_type
 
 class Message(object):
-    def __init__(self, chat, text):
+    def __init__(self, message_id, chat, text):
+        self.message_id = message_id
         self.chat = chat
         self.text = text
 
@@ -28,6 +29,7 @@ class TelegramMapper:
 
     def __to_message(self, json):
         raw_message = json['message']
+        message_id = raw_message['message_id']
         text = raw_message.get('text', None)
         raw_chat = raw_message.get('chat', None)
         self.logger.info(raw_chat)
@@ -36,7 +38,7 @@ class TelegramMapper:
                     raw_chat.get('username', None), \
                     raw_chat['type']) \
                     if raw_chat != None else None
-        return Message(chat, text)
+        return Message(message_id, chat, text)
 
     def __to_inline_query(self, json):
         inline_query = json['inline_query']

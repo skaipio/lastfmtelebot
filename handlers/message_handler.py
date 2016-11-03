@@ -7,7 +7,7 @@ class MessageHandler:
         self.__telegram_botapi_client = telegram_botapi_client
 
     def handle_message(self, message):
-        applogger.info('Handling message ' + message.id)
+        applogger.info('Handling message ' + str(message.message_id))
         if message.text == None:
             return
         m = re.search(r'/recent_tracks (\S+)', message.text) or re.search(r'^What is (\S+) listening to?', message.text)
