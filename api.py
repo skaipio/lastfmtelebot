@@ -18,7 +18,7 @@ TELEGRAM_BOT_TOKEN=app.config['TELEGRAM_BOT_TOKEN']
 TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN, applogger)
 LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'], applogger)
 __telegram_mapper = TelegramMapper(app.logger)
-__message_handler = message_handler.MessageHandler(LASTFM_CLIENT, TELEGRAM_BOTAPI_CLIENT)
+__message_handler = message_handler.MessageHandler(app.logger, LASTFM_CLIENT, TELEGRAM_BOTAPI_CLIENT)
 __inline_query_handler = inline_query_handler.InlineQueryHandler(LASTFM_CLIENT, TELEGRAM_BOTAPI_CLIENT)
 
 @app.route("/" + TELEGRAM_BOT_TOKEN, methods=['POST'])

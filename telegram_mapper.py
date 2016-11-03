@@ -32,7 +32,6 @@ class TelegramMapper:
         message_id = raw_message['message_id']
         text = raw_message.get('text', None)
         raw_chat = raw_message.get('chat', None)
-        self.logger.info(raw_chat)
         chat = Chat(raw_chat['id'], \
                     raw_chat.get('title', None), \
                     raw_chat.get('username', None), \
