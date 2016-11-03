@@ -32,7 +32,7 @@ def __answer_message(json):
     text = message.get('text', None)
     if text == None:
         return
-    m = re.search(r'^What is (\S+) listening to?', text)
+    m = re.search(r'/recent_tracks (\S+)', text) or re.search(r'^What is (\S+) listening to?', text)
     if m != None:
         username = m.group(1)
         tracks = LASTFM_CLIENT.get_recent_tracks(username)
