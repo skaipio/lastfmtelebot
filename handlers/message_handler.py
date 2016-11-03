@@ -12,6 +12,7 @@ class MessageHandler:
     def handle_message(self, message):
         self.__logger.info('Handling message ' + str(message.message_id))
         if message.text == None:
+            self.__logger.info('No text in message ' + str(message.message_id))
             return
         m = re.search(r'/recent_tracks (\S+)', message.text) or re.search(r'^What is (\S+) listening to?', message.text)
         if m != None:
@@ -26,3 +27,5 @@ class MessageHandler:
                                                              track=first_track.name, \
                                                              artist=first_track.artist)
                 self.__telegram_botapi_client.send_message(chat_id, formatted_msg, 'HTML')
+        else:
+            self.__logger.info('Message did not match any known command')
