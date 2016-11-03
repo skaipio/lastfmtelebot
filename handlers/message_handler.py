@@ -1,8 +1,7 @@
 import re
 
 class MessageHandler:
-
-    __track_template = "<b>{username}</b> is listening to <a href={track_url}>{track}</a> of artist <i>{artist}</i>"
+    __track_template = u'<b>{username}</b> is listening to <a href="{track_url}">{track}</a> of artist <i>{artist}</i>'
 
     def __init__(self, logger, lastfm_client, telegram_botapi_client):
         self.__logger = logger
