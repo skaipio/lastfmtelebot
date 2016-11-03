@@ -3,20 +3,24 @@ from lastfm_client import LastFMClient
 from telegram_botapi_client import TelegramBotAPIClient
 from handlers import message_handler, inline_query_handler
 from telegram_mapper import TelegramMapper, Message, InlineQuery
-import applogger
+import logging
 
 app = Flask(__name__)
 app.config.from_envvar('LASTFMBOTAPI_CONFIG')
 
+# Set up logging
 logfile_path = app.config['LOGFILE']
-applogger.setup(app.logger, logfile_path)
+file_handler = logging.FileHandler(logfile_path)
+file_handler.setLevel(logging.DEBUG)
+app.logger.setLevel(logging.DEBUG)
+app.logger.addHandler(file_handler)
 
 session_map = {}
 
 TELEGRAM_BOT_KEY=app.config['TELEGRAM_BOT_KEY']
 TELEGRAM_BOT_TOKEN=app.config['TELEGRAM_BOT_TOKEN']
-TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN, applogger)
-LASTFM_CLIENT = LastFMClient(app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'], applogger)
+TELEGRAM_BOTAPI_CLIENT = TelegramBotAPIClient(TELEGRAM_BOT_KEY, TELEGRAM_BOT_TOKEN, app.logger)
+LASTFM_CLIENT = LastFMClient(app.logger, app.config['LASTFM_API_KEY'], app.config['LASTFM_SECRET'])
 __telegram_mapper = TelegramMapper(app.logger)
 __message_handler = message_handler.MessageHandler(app.logger, LASTFM_CLIENT, TELEGRAM_BOTAPI_CLIENT)
 __inline_query_handler = inline_query_handler.InlineQueryHandler(LASTFM_CLIENT, TELEGRAM_BOTAPI_CLIENT)
@@ -24,7 +28,7 @@ __inline_query_handler = inline_query_handler.InlineQueryHandler(LASTFM_CLIENT, 
 @app.route("/" + TELEGRAM_BOT_TOKEN, methods=['POST'])
 def bot_query():
     json = request.json
-    applogger.info("Received a query from bot\n{}".format(json))
+    app.logger.info("Received a query from bot\n{}".format(json))
 
     telegram_obj = __telegram_mapper.parse_telegram_object(json)
     if isinstance(telegram_obj, Message):

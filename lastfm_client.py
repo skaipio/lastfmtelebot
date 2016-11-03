@@ -9,7 +9,7 @@ class LastFMClient(object):
     LASTFM_API_ROOT = 'http://www.last.fm/api'
     LASTFM_SCROBBLER_ROOT = 'http://ws.audioscrobbler.com/2.0/'
 
-    def __init__(self, api_key, api_secret, logger):
+    def __init__(self, logger, api_key, api_secret):
         self.api_key = api_key
         self.api_secret = api_secret
         self.logger = logger
