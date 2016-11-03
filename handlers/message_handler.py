@@ -17,7 +17,7 @@ class MessageHandler:
             if len(tracks) > 0:
                 first_track = tracks[0]
                 applogger.info('Found track ' + first_track.name + ' for user ' + username)
-                chat_id = message.chat.id
+                chat_id = message.chat.chat_id
                 self.__telegram_botapi_client.send_message(chat_id, \
                     username + ' is listening to ' + \
                     first_track.name + ' of artist ' + \
