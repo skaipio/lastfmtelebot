@@ -2,6 +2,8 @@ import applogger, re
 
 class MessageHandler:
 
+    __track_template = "<b>{username}</b> is listening to <a href={track_url}>{track}</a> of artist <i>{artist}</i>"
+
     def __init__(self, lastfm_client, telegram_botapi_client):
         self.__lastfm_client = lastfm_client
         self.__telegram_botapi_client = telegram_botapi_client
@@ -18,7 +20,8 @@ class MessageHandler:
                 first_track = tracks[0]
                 applogger.info('Found track ' + first_track.name + ' for user ' + username)
                 chat_id = message.chat.chat_id
-                self.__telegram_botapi_client.send_message(chat_id, \
-                    username + ' is listening to ' + \
-                    first_track.name + ' of artist ' + \
-                    first_track.artist)
+                formatted_msg = self.__track_template.format(username=username, \
+                                                             track_url=first_track.url, \
+                                                             track=first_track.name, \
+                                                             artist=first_track.artist)
+                self.__telegram_botapi_client.send_message(chat_id, formatted_msg, 'HTML')

@@ -15,9 +15,10 @@ class Track(object):
     """
     Lastfm Tracks
     """
-    def __init__(self, name, artist):
+    def __init__(self, name, artist, url):
         self.name = name
         self.artist = artist
+        self.url = url
 
 class LastFmMapper(object):
 
@@ -37,11 +38,13 @@ class LastFmMapper(object):
 
     def lastfm_recenttracks(self, content):
         root = ET.fromstring(content)
+        raw_tracks = root.findall('track')
         tracks = []
-        for raw_track in root.iter('track'):
+        for raw_track in raw_tracks:
             name_elem = raw_track.find('name')
             artist_elem = raw_track.find('artist')
-            track = Track(name_elem.text, artist_elem.text)
+            url_elem = raw_track.find('url')
+            track = Track(name_elem.text, artist_elem.text, url_elem.text)
             tracks.append(track)
 
         return tracks

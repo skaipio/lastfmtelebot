@@ -13,8 +13,8 @@ class TelegramBotAPIClient(object):
                 result = self.__set_webhook()
                 self.logger.info(result)
 
-    def send_message(self, chat_id, message):
-        response = self.__do_post_request('sendMessage', {'chat_id': chat_id, 'text': message})
+    def send_message(self, chat_id, message, parse_mode=''):
+        response = self.__do_post_request('sendMessage', {'chat_id': chat_id, 'text': message, 'parse_mode': parse_mode})
         self.logger.info('Sent message. Response:')
         self.logger.info(response.status_code)
         self.logger.info(response.text)
